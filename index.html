@@ -234,6 +234,13 @@ pre.pv{margin:0;background:var(--code-bg);border:1px solid var(--line);border-ra
 @media (max-width:720px){.rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .rules div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.85rem;min-width:0}
 .rules b{display:block;font-family:var(--display);color:var(--warn)}
+.fb{display:grid;gap:4px;border-top:1px dashed var(--line);padding-top:10px}
+.fb span.fl{font-family:var(--display);font-weight:600;font-size:.92rem;color:var(--ink)}
+.stars{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.stars button{font-size:1.7rem;line-height:1;background:none;border:0;padding:2px 3px;cursor:pointer;color:var(--line);min-width:40px;min-height:40px}
+.stars button.on{color:#E0A526}
+.stars button:focus-visible{outline:2px solid var(--honey);border-radius:6px}
+.stars .sv{font-family:var(--display);font-weight:600;font-size:.88rem;color:var(--honey-ink);margin-left:6px}
 .thumb{display:flex;gap:10px;align-items:flex-end;margin-top:8px}
 .thumb img{max-width:220px;max-height:180px;border-radius:10px;border:1px solid var(--line)}
 input[type=file]{font:inherit;font-size:.88rem;max-width:100%}
@@ -268,7 +275,7 @@ input[type=file]{font:inherit;font-size:.88rem;max-width:100%}
       <li><span>เลือกการ์ดจากเส้นทางด้านล่าง ปรับ dropdown และช่องกรอกในการ์ด prompt จะเปลี่ยนตามทันที</span></li>
       <li><span>กด <b>คัดลอก</b> แล้ววางในแอป AI ที่หน่วยงานอนุญาต (ChatGPT, Gemini, Claude หรืออื่น ๆ) การ์ดที่บอกว่า "แชตเดิม" ให้ทำต่อในแชตเดียวกัน</span></li>
       <li><span>อ่านผลก่อนใช้ทุกครั้ง ดูตัวเลข ชื่อยา คำแนะนำทางคลินิก และภาษาไทยในภาพ ถ้าไม่ตรงใจให้แก้ R, T หรือ F แล้วสั่งใหม่</span></li>
-      <li><span>วางผลที่ได้ลงในช่องบันทึกของการ์ด (การ์ดภาพให้แนบไฟล์ภาพ) แล้วดาวน์โหลดสมุดงานเป็นไฟล์ Word ท้ายหน้าเพื่อส่ง</span></li>
+      <li><span>วางผลที่ได้ลงในช่องบันทึกของการ์ด (การ์ดภาพให้แนบไฟล์ภาพ) ให้ดาว 1–5 และเขียนความเห็นสั้น ๆ แล้วดาวน์โหลดสมุดงานเป็นไฟล์ Word ท้ายหน้าเพื่อส่ง</span></li>
     </ol>
     <div class="tags-legend"><span class="tag ai">AI วิเคราะห์</span><span class="tag dr">AI ช่วยร่าง</span><span class="tag hu">คนทำหรือคนตัดสิน</span></div>
   </div>
@@ -338,7 +345,7 @@ input[type=file]{font:inherit;font-size:.88rem;max-width:100%}
 
 <section class="section" id="export">
   <h2>ส่งสมุดงาน</h2>
-  <p class="lead">หลังอบรม ลองทำอย่างน้อย 3 การ์ด: งานภาพ 1 การ์ด (หมวด B) งานเขียน 1 การ์ด (หมวด A, C, D หรือ E) และอีก 1 การ์ดที่ตรงงานของคุณที่สุด แล้วดาวน์โหลดสมุดงานส่งตามช่องทางที่ผู้สอนแจ้ง ในไฟล์มี prompt ที่คุณปรับ ผลที่ได้ ภาพที่แนบ และบันทึกการใช้ AI</p>
+  <p class="lead">หลังอบรม ลองทำอย่างน้อย 3 การ์ด: งานภาพ 1 การ์ด (หมวด B) งานเขียน 1 การ์ด (หมวด A, C, D หรือ E) และอีก 1 การ์ดที่ตรงงานของคุณที่สุด ให้ดาวและเขียนความเห็นสั้น ๆ ทุกการ์ดที่ทำ แล้วดาวน์โหลดสมุดงานส่งตามช่องทางที่ผู้สอนแจ้ง ในไฟล์มี prompt ที่คุณปรับ ผลที่ได้ ภาพที่แนบ คะแนน และบันทึกการใช้ AI</p>
   <div class="export">
     <p id="ex-progress"></p>
     <div class="docprev"><span class="pg" aria-hidden="true"><i></i><b></b></span><span>ไฟล์ใช้ CI คณะเภสัชศาสตร์ มธ. ตารางที่วางมาจากแชตจะกลายเป็นตารางใน Word ภาพที่แนบในการ์ดหมวด B จะอยู่ในไฟล์ด้วย</span></div>
@@ -917,8 +924,19 @@ const isImg = c => c.mod==='B';
 function rec(c){
   return '<div class="rec"><h4>บันทึกของฉัน <span class="k">จะไปอยู่ในสมุดงาน Word</span></h4>'+
     (isImg(c)?'<div><label class="fl" for="img-'+c.id+'">แนบภาพที่ได้</label><input type="file" accept="image/*" id="img-'+c.id+'" data-img="'+c.id+'"><div class="thumb" id="th-'+c.id+'"></div><p class="hint">ภาพจะถูกย่อขนาดและใส่ในสมุดงาน Word</p></div>':'')+
-    '<div><label class="fl" for="f-'+c.id+'-res">'+(isImg(c)?'Prompt ที่แก้เพิ่ม หรือข้อสังเกต (ไม่บังคับ)':'ผลที่ได้ (วางจากแชต แล้วแก้ให้พร้อมใช้)')+'</label><textarea id="f-'+c.id+'-res" data-save="f-'+c.id+'-res" rows="'+(isImg(c)?2:4)+'" placeholder="'+(isImg(c)?'เช่น สั่งแก้รอบ 2 ให้เปลี่ยนฉากเป็นห้องตรวจ':'วางผลจาก AI ที่ตรวจแก้แล้ว ตารางจากแชตจะกลายเป็นตารางใน Word')+'"></textarea></div></div>';
+    '<div><label class="fl" for="f-'+c.id+'-res">'+(isImg(c)?'Prompt ที่แก้เพิ่ม หรือข้อสังเกต (ไม่บังคับ)':'ผลที่ได้ (วางจากแชต แล้วแก้ให้พร้อมใช้)')+'</label><textarea id="f-'+c.id+'-res" data-save="f-'+c.id+'-res" rows="'+(isImg(c)?2:4)+'" placeholder="'+(isImg(c)?'เช่น สั่งแก้รอบ 2 ให้เปลี่ยนฉากเป็นห้องตรวจ':'วางผลจาก AI ที่ตรวจแก้แล้ว ตารางจากแชตจะกลายเป็นตารางใน Word')+'"></textarea></div>'+
+    '<div class="fb"><span class="fl" id="sl-'+c.id+'">ให้คะแนน prompt นี้</span><div class="stars" role="radiogroup" aria-labelledby="sl-'+c.id+'" data-stars="'+c.id+'">'+[1,2,3,4,5].map(i=>'<button type="button" role="radio" aria-checked="false" data-star="'+i+'" aria-label="'+i+' ดาว">★</button>').join('')+'<span class="sv"></span></div>'+
+    '<label class="fl" for="f-'+c.id+'-fb">ความเห็นสั้น ๆ หลังลองใช้</label><textarea id="f-'+c.id+'-fb" data-save="f-'+c.id+'-fb" rows="2" placeholder="ใช้ง่ายไหม ได้ผลตรงที่ต้องการแค่ไหน อยากให้ปรับอะไร"></textarea></div></div>';
 }
+// ---------- ดาว 1–5 ----------
+const STXT=['','ใช้ไม่ได้','ต้องแก้มาก','พอใช้','ดี','ดีมาก ใช้ต่อแน่นอน'];
+const getStar = id => +(store.get('star-'+id)||0);
+function showStars(id){ const g=document.querySelector('[data-stars="'+id+'"]'); if(!g) return; const v=getStar(id);
+  g.querySelectorAll('[data-star]').forEach(b=>{ const on=+b.dataset.star<=v; b.classList.toggle('on',on); b.setAttribute('aria-checked',+b.dataset.star===v?'true':'false'); });
+  g.querySelector('.sv').textContent = v?v+'/5 · '+STXT[v]:''; }
+function loadStars(){ T.forEach(c=>showStars(c.id)); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-star]'); if(!b) return; const id=b.closest('[data-stars]').dataset.stars, v=+b.dataset.star;
+  store.set('star-'+id, getStar(id)===v?'0':String(v)); showStars(id); progress(); });
 // ---------- ภาพที่แนบ ----------
 function getImg(id){ try{ const s=store.get('img-'+id); return s?JSON.parse(s):null; }catch(e){ return null; } }
 function showThumb(id){ const el=document.getElementById('th-'+id); if(!el) return; const im=getImg(id);
@@ -1127,7 +1145,8 @@ function footerXml(){
 }
 
 
-function usedCards(){ return T.filter(c=>store.get('done-'+c.id)==='1' || val('f-'+c.id+'-res') || getImg(c.id)); }
+function usedCards(){ return T.filter(c=>store.get('done-'+c.id)==='1' || val('f-'+c.id+'-res') || getImg(c.id) || getStar(c.id) || val('f-'+c.id+'-fb')); }
+const starTxt = id => { const v=getStar(id); return v?'★'.repeat(v)+'☆'.repeat(5-v)+'  '+v+'/5':'ยังไม่ได้ให้คะแนน'; };
 let IMGS=[];
 function imgXml(im,n){
   const rid='rIdI'+n; IMGS.push({rid,n,b64:im.d.split(',')[1]});
@@ -1154,10 +1173,12 @@ function documentXml(LOGO_RID){
     const im=getImg(c.id);
     if(isImg(c)){ x+=H2('ภาพที่ได้')+(im?imgXml(im,IMGS.length+1):P('(ไม่ได้แนบภาพ)',{},{i:true,color:CI.gray})); if(val('f-'+c.id+'-res')) x+=H2('ข้อสังเกต')+body(val('f-'+c.id+'-res')); }
     else x+=H2('ผลที่ได้')+body(val('f-'+c.id+'-res'));
+    x+=H2('คะแนนและความเห็นหลังลองใช้')+P(starTxt(c.id),{after:60},{b:true,color:getStar(c.id)?'B7791F':CI.gray})+(val('f-'+c.id+'-fb')?body(val('f-'+c.id+'-fb')):'');
   });
-  const rows=[['การ์ด','หมวด','ผลงาน']].concat(used.map(c=>[c.n+' '+c.title,MODS[c.mod],isImg(c)?(getImg(c.id)?'มีภาพ':'ไม่มีภาพ'):(val('f-'+c.id+'-res')?'มีผลงาน':'ยังไม่ได้วางผล')]));
-  rows.push([{t:'เรื่องที่ AI ทำผิดหรือเกินที่สั่ง',b:true,fill:'FDF0E7'},{t:val('r-rej')||'(ยังไม่ได้กรอก)',span:2,fill:'FDF0E7'}]);
-  x+=H1('บันทึกการใช้ AI')+table(rows,[3800,2600,FULLW-6400],{header:true});
+  const rows=[['การ์ด','ผลงาน','คะแนน','ความเห็นสั้น ๆ']].concat(used.map(c=>[c.n+' '+c.title,isImg(c)?(getImg(c.id)?'มีภาพ':'ไม่มีภาพ'):(val('f-'+c.id+'-res')?'มีผลงาน':'ยังไม่ได้วางผล'),getStar(c.id)?getStar(c.id)+'/5':'-',val('f-'+c.id+'-fb')||'-']));
+  const rated=used.filter(c=>getStar(c.id)); if(rated.length) rows.push([{t:'คะแนนเฉลี่ย',b:true,fill:CI.parch},{t:'',fill:CI.parch},{t:(rated.reduce((s,c)=>s+getStar(c.id),0)/rated.length).toFixed(1)+'/5',b:true,fill:CI.parch},{t:'จาก '+rated.length+' การ์ด',fill:CI.parch}]);
+  rows.push([{t:'เรื่องที่ AI ทำผิดหรือเกินที่สั่ง',b:true,fill:'FDF0E7'},{t:val('r-rej')||'(ยังไม่ได้กรอก)',span:3,fill:'FDF0E7'}]);
+  x+=H1('สรุปการ์ดที่ทำและคะแนน')+table(rows,[3000,1500,1100,FULLW-5600],{header:true});
   x+=H2('งานที่จะนำไปใช้จริงในสัปดาห์หน้า')+body(val('r-use'))+H2('งานที่จะไม่ให้ AI ทำแทน')+body(val('r-never'));
   x+=H2('ข้อความเปิดเผยการใช้ AI (แก้ให้ตรงกับที่ใช้จริง)')+P('ผู้จัดทำใช้ '+(val('r-tool')||'[ชื่อเครื่องมือและรุ่น]')+' ช่วยร่างและจัดรูปแบบเนื้อหา ผู้จัดทำตรวจสอบความถูกต้องกับแหล่งข้อมูลต้นฉบับ และไม่ได้นำข้อมูลส่วนบุคคลหรือข้อมูลผู้ป่วยเข้าสู่ระบบ',{shade:CI.parch,jc:'thaiDistribute',after:160});
   x+=H1('ก่อนนำไปใช้จริง')+['ตรวจข้อเท็จจริงทางคลินิกทุกข้อกับแหล่งอ้างอิงที่หน่วยงานใช้','ตรวจภาษาไทยในภาพและสื่อทุกคำก่อนเผยแพร่','ยืนยันว่าไม่มีข้อมูลผู้ป่วยหรือข้อมูลส่วนบุคคลในสื่อและไฟล์','ให้ผู้รับผิดชอบอนุมัติก่อนเผยแพร่ และระบุว่าใช้ AI ช่วยจัดทำ'].map(t=>P('☐  '+t,{after:60,ind:200})).join('');
@@ -1188,6 +1209,7 @@ function progress(){
   const need=[['g-name','ชื่อ'],['g-prof','วิชาชีพ'],['r-tool','เครื่องมือที่ใช้'],['r-rej','เรื่องที่ AI ทำผิดหรือเกินที่สั่ง']];
   const miss=need.filter(n=>!val(n[0])).map(n=>n[1]);
   if(used.length<3) miss.push('ทำอย่างน้อย 3 การ์ด (ตอนนี้ '+used.length+')');
+  const unr=used.filter(c=>!getStar(c.id)).length; if(unr) miss.push('ให้ดาวการ์ดที่ทำ (ยังขาด '+unr+' การ์ด)');
   const el=document.getElementById('ex-progress');
   el.innerHTML = miss.length? 'ยังขาด: '+miss.map(esc).join(', ')+' · ดาวน์โหลดได้ตลอด ส่วนที่ขาดจะเว้นว่างไว้' : '<b>ครบแล้ว</b> มี '+used.length+' การ์ดในสมุดงาน ดาวน์โหลดได้เลย';
   el.classList.toggle('ok',!miss.length);
@@ -1219,7 +1241,7 @@ document.getElementById('ex-docx').addEventListener('click', async ()=>{
 function allText(){
   const g=G(), s=(h,v)=>'## '+h+'\n'+(v||'(ยังไม่ได้กรอก)')+'\n';
   const parts=['สมุดงาน AI ของฉัน · Workshop AI สำหรับบุคลากรทางการแพทย์','ชื่อ: '+g.name,'วิชาชีพ: '+val('g-prof'),'หน่วยงาน: '+g.unit,'เครื่องมือ: '+val('r-tool'),''];
-  usedCards().forEach(c=>{ parts.push('# '+c.n+' '+c.title); c.ps.forEach((p,i)=>parts.push(s('Prompt '+p.name,promptText(built(c,i,g))))); parts.push(s(isImg(c)?'ข้อสังเกต (ภาพอยู่ในไฟล์ Word)':'ผลที่ได้',val('f-'+c.id+'-res'))); });
+  usedCards().forEach(c=>{ parts.push('# '+c.n+' '+c.title); c.ps.forEach((p,i)=>parts.push(s('Prompt '+p.name,promptText(built(c,i,g))))); parts.push(s(isImg(c)?'ข้อสังเกต (ภาพอยู่ในไฟล์ Word)':'ผลที่ได้',val('f-'+c.id+'-res')),'คะแนน: '+starTxt(c.id),s('ความเห็นหลังลองใช้',val('f-'+c.id+'-fb'))); });
   parts.push(s('เรื่องที่ AI ทำผิดหรือเกินที่สั่ง',val('r-rej')),s('งานที่จะนำไปใช้จริง',val('r-use')),s('งานที่จะไม่ให้ AI ทำแทน',val('r-never')));
   return parts.join('\n');
 }
@@ -1234,11 +1256,11 @@ document.getElementById('ex-clear-yes').addEventListener('click',()=>{
   try{ Object.keys(localStorage).filter(k=>k.startsWith(NS)).forEach(k=>localStorage.removeItem(k)); }catch(e){}
   document.querySelectorAll('[data-save]').forEach(el=>el.value='');
   document.querySelectorAll('[data-done]').forEach(b=>b.checked=false);
-  render(); loadDone(); loadThumbs();
+  render(); loadDone(); loadThumbs(); loadStars();
   clrOk.hidden=true; progress(); say('ล้างข้อมูลในเครื่องนี้แล้ว');
 });
 document.getElementById('ex-clear-no').addEventListener('click',()=>{ clrOk.hidden=true; });
-loadThumbs(); progress();
+loadThumbs(); loadStars(); progress();
 
 </script>
 </body>
